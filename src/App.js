@@ -1,51 +1,64 @@
-import React, { useState } from 'react';
+import React, { Component } from 'react';
 import './App.css';
 import GameField from './GameField';
 
-function App() {
-  const [isGameStarted, toggleGameStart] = useState(true);
-  const [gameFields, setGameFields] = useState(Array(10).fill(Array(10).fill(false)));
+export default class App extends Component {
+    constructor(...props) {
+        super(...props);
 
-  const changeGameField = (i, j) => {
-    const gameFieldsCopy = gameFields.map(e => e.slice());
-    gameFieldsCopy[i][j] = !gameFieldsCopy[i][j];
-    setGameFields(gameFieldsCopy);
+        this.state = {
+            isGameStarted: true,
+            toggleGameStart: true,
+            gameFields: Array(10).fill(Array(10).fill(false)),
+            setGameFields: Array(10).fill(Array(10).fill(false)),
+            gameCells: [],
+        };
+    }
+
+    changeGameField = (i, j) => {
+        const gameFieldsCopy = this.gameFields.map(e => e.slice());
+        gameFieldsCopy[i][j] = !gameFieldsCopy[i][j];
+        this.setGameFields(gameFieldsCopy);
+    };
+
+    addField = () => {
+        for(let i = 0; i < 10; i++) {
+            for(let j = 0; j < 10; j++) {
+                this.state.gameCells.push(
+                    <GameField
+                        key={`${i}${j}`}
+                        isAlive={this.gameFields[i][j]}
+                        toggleAlive={() => {this.changeGameField(i, j)}}
+                    />
+                )
+            }
+        }
+    };
+
+
+
+  gameLoop = () => {
+    if (this.state.isGameStarted) {
+      this.updateFields();
+      this.addField();
+      setTimeout(() => this.gameLoop(), 500);
+    }
   };
 
-  const gameCells = [];
-  for(let i = 0; i < 10; i++) {
-    for(let j = 0; j < 10; j++) {
-      gameCells.push(
-        <GameField
-          key={`${i}${j}`}
-          isAlive={gameFields[i][j]}
-          toggleAlive={() => {changeGameField(i, j)}}
-        />
-      )
-    }
-  }
-
-  const gameLoop = () => {
-    if (isGameStarted) {
-      updateFields();
-      setTimeout(() => gameLoop(), 500);
-    }
-  };
-
-  const updateFields = () => {
-    const fieldsCopy = gameFields.map(e => e.slice());
+  updateFields = () => {
+    const fieldsCopy = this.state.gameFields.map(e => e.slice());
 
     for (let i = 0; i < 10; i++) {
       for (let j = 0; j < 10; j++) {
-        fieldsCopy[i][j] = getNewCellState(i, j, gameFields[i][j]);
+        fieldsCopy[i][j] = this.getNewCellState(i, j, this.state.gameFields[i][j]);
       }
     }
     console.log(fieldsCopy);
-    setGameFields(fieldsCopy);
+    this.setGameFields(fieldsCopy);
   };
 
   // Вынести в утилс
-  const getNewCellState = (row, column, isAlive) => {
+  getNewCellState = (row, column, isAlive) => {
     let aliveNeighborsCounter = 0;
 
     const neighborsCords = [
@@ -60,7 +73,7 @@ function App() {
     ];
 
     neighborsCords.forEach(([i, j]) => {
-      const fieldsRow = gameFields[row + i];
+      const fieldsRow = this.state.gameFields[row + i];
       fieldsRow && fieldsRow[column + j] && aliveNeighborsCounter++; // HACH
     });
 
@@ -71,21 +84,23 @@ function App() {
     }
   };
 
-  const startGame = () => {
-    if (isGameStarted) {
-      toggleGameStart(true);
-      gameLoop();
+  startGame = () => {
+    if (this.state.isGameStarted) {
+      this.toggleGameStart(true);
+      this.gameLoop();
     }
   };
+    render()
+        {
 
-  return (
-    <>
-      <div className="game">
-          {gameCells}
-      </div>
-      <button id="startGame" onClick={startGame}>Start the game</button>
-    </>
-  );
+            return (
+                <>
+                    <div className="game">
+                        {this.state.gameCells}
+                    </div>
+                    <button id="startGame" onClick={this.startGame}>Start the game</button>
+                </>
+            );
+        }
 }
 
-export default App;
