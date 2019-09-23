@@ -3,16 +3,17 @@ import './App.css';
 import GameField from './GameField';
 
 function App() {
-  const [isGameStarted, toggleGameStart] = useState(true);
-  const [gameFields, setGameFields] = useState(Array(10).fill(Array(10).fill(false)));
+  const [isGameStarted, toggleGameStart] = useState(false);
+  const [gameFields, setGameFields] = useState(Array(10).fill(Array(10).fill(0)));
 
   const changeGameField = (i, j) => {
-    const gameFieldsCopy = gameFields.map(e => e.slice());
-    gameFieldsCopy[i][j] = !gameFieldsCopy[i][j];
+    const gameFieldsCopy = gameFields.map(e => e.slice()); // мб делать глубокую копию
+    gameFieldsCopy[i][j] = gameFieldsCopy[i][j] ? 0 : 1;
     setGameFields(gameFieldsCopy);
   };
 
   const gameCells = [];
+
   for(let i = 0; i < 10; i++) {
     for(let j = 0; j < 10; j++) {
       gameCells.push(
@@ -26,10 +27,10 @@ function App() {
   }
 
   const gameLoop = () => {
-    if (isGameStarted) {
+    // if (isGameStarted) {
       updateFields();
-      setTimeout(() => gameLoop(), 500);
-    }
+      // setTimeout(() => gameLoop(), 500);
+    // }
   };
 
   const updateFields = () => {
@@ -40,7 +41,6 @@ function App() {
         fieldsCopy[i][j] = getNewCellState(i, j, gameFields[i][j]);
       }
     }
-    console.log(fieldsCopy);
     setGameFields(fieldsCopy);
   };
 
@@ -65,17 +65,17 @@ function App() {
     });
 
     if(isAlive) {
-        return (aliveNeighborsCounter === 2 || aliveNeighborsCounter === 3)
+        return (aliveNeighborsCounter === 2 || aliveNeighborsCounter === 3) ? 1 : 0;
     } else {
-        return aliveNeighborsCounter === 3;
+        return aliveNeighborsCounter === 3 ? 1 : 0;
     }
   };
 
   const startGame = () => {
-    if (isGameStarted) {
-      toggleGameStart(true);
+    // if (isGameStarted) {
+      // toggleGameStart(true);
       gameLoop();
-    }
+    // }
   };
 
   return (
