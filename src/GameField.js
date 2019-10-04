@@ -11,17 +11,11 @@ function GameCell ({ isAlive, toggleAlive }) {
     );
 }
 
-// class GameCell extends React.PureComponent {
-//     render() {
-//         const { isAlive, toggleAlive } = this.props;
-//         console.log('rerender');
-//         return (
-//             <div 
-//                 className={classNames('cell', {alive: isAlive})}
-//                 onClick={toggleAlive}
-//             />
-//         );
-//     }
-// }
+function areEqual (prevProps, nextProps) {
+    if (prevProps.isAlive !== nextProps.isAlive) {
+        return false;
+    }
+    return true;
+}
 
-export default GameCell;
+export default React.memo(GameCell, areEqual);
