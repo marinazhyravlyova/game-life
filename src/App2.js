@@ -23,21 +23,18 @@ export default class App2 extends React.Component {
     }
 
     renderGameCells = () => {
-        const gameCells = [];
-
-        for(let i = 0; i < 10; i++) {
-            for(let j = 0; j < 10; j++) {
-            gameCells.push(
-                <GameField
-                key={`${i}${j}`}
-                isAlive={this.state.gameFields[i][j]}
-                toggleAlive={() => {this.changeGameField(i, j)}}
-                />
-            )
-            }
-        }
-
-        return gameCells;
+        return this.state.gameFields.reduce((acc, array, i) => {
+            array.map((item, j) => {
+                acc.push(
+                    <GameField 
+                        key={`${i}${j}`}
+                        isAlive={item}
+                        toggleAlive={() => {this.changeGameField(i, j)}}
+                    />
+                )
+            })
+            return acc;
+        }, [])
     }
 
     gameLoop = () => {
